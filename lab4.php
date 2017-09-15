@@ -1,44 +1,57 @@
-<?php
+﻿<?php
 echo "Лабораторная работа №4. Объем воды, собравшейся на крыше.";
 //Т.к. в задании не сказано, что пазов может быть несколько, считаем только объем лужи в первом пазе
-//и пока лесенка наклонена всегда в одну сторону(надо доработать)
 
 $roof = array(2,5,1,2,3,4,7,7,6);
 
-$min = $roof[1];
-$max = $roof[1];
-$kmin=1;
-$kmax=1;
-
-//Выводим на экран заданную последовательность
-echo "<br>Заданная последовательность: ";
-foreach ($roof as $value)
-	echo $value." ";
-
-//Находим в последовательности максимальный и минимальный элемент, между которыми считать объем	
-foreach ($roof as $key=>$value)
+$len = count($roof); //длина последовательности
+$coordinate1=0;
+$coordinate2=0;
+$keycoord1=0;
+$keycoord2=0;
+//Находим максимальный элемент, он будет координатой 1
+for($i=1;$i<$len-1;$i++)
 {
-	if (($value>$min) && ($value<$max))
+	if($roof[$i]>$coordinate1) 
 	{
-		$min=$value;
-		$kmin=$key;
-		break;	
-	}
-	if ($value>$max) 
-	{
-		$max=$value;
-		$kmax=$key;
-		break;
+		$coordinate1=$roof[$i];
+		$keycoord1=$i;
 	}
 }
+//Находим еще один максимальный элемент, он будет координатой 2
+for($i=1;$i<$len-1;$i++)
+{
+	if($i<>$keycoord1)
+		if(($roof[$i]>$coordinate2) && (abs($keycoord1-$i)>1))
+		{
+			$coordinate2=$roof[$i];
+			$keycoord2=$i;
+		}
+}
+
+//$a-прилегающая сторона для поиска угла
+if ($keycoord1>$keycoord2)
+	$a=abs($keycoord1-$keycoord2)-1;
+else
+	$a=abs($keycoord1-$keycoord2)+1;
+
+//Подсчет объема воды в пазе
 $sum=0;
 
-for($i=$kmin+1;$i<$kmax;$i++)
-	$sum=$sum+($min-$roof[$i]);
+	if ($keycoord1>$keycoord2)
+	for($i=$keycoord2+1;$i<=$keycoord1-1;$i++)	
+		$sum=$sum+($coordinate2-$roof[$i]);		
+else
+	for($i=$keycoord1+1;$i<=$keycoord2-1;$i++)
+		$sum=$sum+$roof[$i];	
+echo "<br>Объем собравшейся воды=".$sum;
 
-echo "<br>Объем лужи=".$sum;
-
-$x=($kmax-$kmin-1)*(90/(($kmax-$kmin-1)+$min));
-echo "<br>Наклон крыши=".$x." градусов";
-
+if($keycoord1>$keycoord2)
+//$b-противоположная сторона для поиска угла
+	$b=$roof[$keycoord1-1];
+else
+	$b=$roof[$keycoord1+1];
+$corner=$a*(90/($a+$b));
+echo "<br>Угол наклона крыши=".$corner;		
+			
 ?>
