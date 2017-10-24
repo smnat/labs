@@ -17,6 +17,7 @@ $prevValue=$roof[0][0];    //предыдущее последнее значе�
 $a=0;
 $sequence=0; //объем воды в отдельном пазе
 $numberSlot=1; //номер паза
+$allSequence=0; //полный объем воды на крыше
 
 for($i=0;$i<$len-1;$i++)
 {
@@ -62,6 +63,8 @@ for($i=0;$i<$len-1;$i++)
 	}	
 }
 
+//Поиск объема воды и угла наклона
+//Ищет правильно объем только в 
 for ($j=0;$j<count($leftSequence);$j++)
 {
 	$countValue=count($leftSequence[$j]);
@@ -76,6 +79,7 @@ for ($j=0;$j<count($leftSequence);$j++)
 		$b=$countValue-2; //сторона треугольника b
 		$corner=$a*(90/($a+$b)); //прилегающий угол
 		echo "<br>Угол наклона паза $numberSlot=".$corner."&deg;";
+		$allSequence+=$sequence;
 		$sequence=0;
 		$numberSlot++;
 	}
@@ -94,26 +98,33 @@ for ($r=0;$r<count($rightSequence);$r++)
 		$b=$countValue-2;
 		$corner=$a*(90/($a+$b));
 		echo "<br>Угол наклона паза $numberSlot=".$corner."&deg;";
+		$allSequence+=$sequence;
 		$sequence=0;
 		$numberSlot++;
 	}
 }
 
+echo "<br><br>Объем воды на крыше = ".$allSequence."<br>";
 
 $multiple = 30;
 $width=$len*$multiple+$multiple*2;
 $height=max($roof)*$multiple;
 $img = ImageCreateTrueColor($width, $height);
 $pink = imagecolorallocate($img, 255, 105, 180);
-$fgColor = array(255, 255, 255);
-$fg = imagecolorallocate($img, $fgColor[0], $fgColor[1], $fgColor[2]);
+$gray = imagecolorallocate($img, 128, 128, 128);
 $m=0;
+$my=0;
 for($i=0;$i<$len;$i++)
 {
-   ImageLine($img, $multiple, $height-$multiple, $width-$multiple, $height-$multiple, 255); //x
-   ImageLine($img, $multiple, $multiple, $multiple, $height-$multiple, 255); //y 
-   ImageRectangle($img,$multiple+$m, $height-$multiple, 60+$m, $height-$multiple-($roof[$i]*20), $pink);  
+	ImageLine($img, $multiple, $height-$multiple, $width-$multiple, $height-$multiple, 255); //x
+	ImageLine($img, $multiple, $multiple, $multiple, $height-$multiple, 255); //y 
+	$font = 'arial.ttf';
+	imagettftext ($img, 10, 0, $multiple+$m, $height-10, $gray, $font, $i); //подпись значений по x
+	if (($my>0) && ($my<200))
+	imagettftext ($img, 10, 0, $multiple-10, $height-$my-30, $gray, $font, $i); //подпись значений по y
+	ImageRectangle($img,$multiple+$m, $height-$multiple, 60+$m, $height-$multiple-($roof[$i]*20), $pink);  
    $m+=30;
+   $my+=20;
 }
 ImagePng($img,"images/graphic.png");
 echo "<br><img src='images/graphic.png'>";
